@@ -44,7 +44,7 @@ resource "aws_key_pair" "key" {
   public_key = "${tls_private_key.key.public_key_openssh}"
 }
 
-# save the private key locally (so we can manually debug it)
+# save the private key locally
 resource "local_file" "key" {
   content  = "${tls_private_key.key.private_key_pem}"
   filename = "id_rsa"
@@ -171,7 +171,27 @@ resource "aws_instance" "NAT" {
   tags = {
     Name = "SSH_Inception/Cloud/SubnetNAT/NAT"
   }
+  #provisioner "remote-exec" {
+  #  inline = [
+  #    ""
+  #  ]
+  #}
 }
+
+
+#data "template_file" "script" {
+#  template = "${file("${path.module}/init.tpl")}"
+#
+#  vars {
+#    consul_address = "${aws_instance.consul.private_ip}"
+#  }
+#}
+
+
+#data "template_cloudinit_config" "starting_line" {
+#  gzip = true
+#  base64_encode = true
+#}
 
 resource "aws_instance" "StartingLine" {
   ami           = "${data.aws_ami.ubuntu.id}"
@@ -181,21 +201,37 @@ resource "aws_instance" "StartingLine" {
   depends_on    = ["aws_instance.NAT"]
   key_name      = "${aws_key_pair.key.key_name}"
   vpc_security_group_ids = ["${aws_security_group.NATSG.id}"]
+  user_data = "${file("starting_line/init.cfg")}"
   tags = {
     Name = "SSH_Inception/Cloud/PlayerSubnet/StartingLine"
   }
-  provisioner "remote-exec" {
-    connection {
-      user         = "ubuntu"
-      private_key  = "${tls_private_key.key.private_key_pem}"
 
-      # connect to NAT first, then connect to host
-      bastion_user        = "ec2-user"
-      bastion_host        = "${aws_instance.NAT.public_ip}"
-      bastion_private_key = "${tls_private_key.key.private_key_pem}"
-    }
+  connection {
+    user         = "ubuntu"
+    private_key  = "${tls_private_key.key.private_key_pem}"
+
+    # connect to NAT first, then connect to host
+    bastion_user        = "ec2-user"
+    bastion_host        = "${aws_instance.NAT.public_ip}"
+    bastion_private_key = "${tls_private_key.key.private_key_pem}"
+  }
+
+  provisioner "file" {
+    source = "starting_line/motd"
+    destination = "/tmp/motd"
+  }
+
+  provisioner "remote-exec" {
     inline = [
-      "echo 'watwat' > wat"
+      # requried because we enable ssh password authentication
+      "sudo service sshd reload",
+
+      # so users don't see annoying stuff when they log in
+      "sudo chmod -x /etc/update-motd.d/*",
+      "sudo rm /etc/legal",
+
+      # instead, they see our beautiful motd
+      "sudo mv /tmp/motd /etc/motd"
     ]
   }
 }
