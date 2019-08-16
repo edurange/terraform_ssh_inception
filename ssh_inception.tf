@@ -162,7 +162,7 @@ resource "aws_route_table_association" "player_subnet_route_table_association" {
 
 resource "aws_instance" "nat" {
   ami           = "${data.aws_ami.nat.id}"
-  instance_type = "t2.micro"
+  instance_type = "t2.nano"
   private_ip    = "10.0.129.5"
   subnet_id     = "${aws_subnet.SubnetNAT.id}"
   vpc_security_group_ids = ["${aws_security_group.public.id}"]
@@ -184,15 +184,10 @@ resource "aws_instance" "nat" {
 #  }
 #}
 
-
 #data "template_cloudinit_config" "starting_line" {
 #  gzip = true
 #  base64_encode = true
 #}
-
-
-
-#data "aws_caller_identity" "current" {}
 
 #output "current_caller_arn" {
 #  value = "${data.aws_caller_identity.current.arn}"
@@ -204,7 +199,7 @@ resource "aws_instance" "nat" {
 
 resource "aws_instance" "starting_line" {
   ami           = "${data.aws_ami.ubuntu.id}"
-  instance_type = "t2.micro"
+  instance_type = "t2.nano"
   private_ip    = "10.0.0.5"
   subnet_id     = "${aws_subnet.private.id}"
   depends_on    = ["aws_instance.nat"]
@@ -253,7 +248,7 @@ resource "aws_instance" "starting_line" {
 
 resource "aws_instance" "first_stop" {
   ami           = "${data.aws_ami.ubuntu.id}"
-  instance_type = "t2.micro"
+  instance_type = "t2.nano"
   private_ip    = "10.0.0.7"
   subnet_id     = "${aws_subnet.private.id}"
   depends_on    = ["aws_instance.nat"]
@@ -279,16 +274,87 @@ resource "aws_instance" "first_stop" {
   }
 }
 
-#resource "aws_instance" "SecondStop" {
-#  ami           = "${data.aws_ami.ubuntu.id}"
-#  instance_type = "t2.micro"
-#  private_ip    = "10.0.0.10"
-#  subnet_id     = "${aws_subnet.private.id}"
-#  depends_on    = ["aws_instance.NAT"]
-#  tags = {
-#    Name = "SSH_Inception/Cloud/PlayerSubnet/SecondStop"
-#  }
-#}
+
+resource "tls_private_key" "third_stop" {
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
+
+resource "aws_instance" "second_stop" {
+  ami           = "${data.aws_ami.ubuntu.id}"
+  instance_type = "t2.nano"
+  private_ip    = "10.0.0.10"
+  subnet_id     = "${aws_subnet.private.id}"
+  depends_on    = ["aws_instance.nat"]
+  key_name      = "${aws_key_pair.key.key_name}"
+  user_data     = "${file("second_stop/init.cfg")}"
+  vpc_security_group_ids = ["${aws_security_group.private.id}"]
+  tags = {
+    Name = "ssh_inception/second_stop"
+  }
+  connection {
+    user         = "ubuntu"
+    private_key  = "${tls_private_key.key.private_key_pem}"
+
+    # connect to NAT first, then connect to host
+    bastion_user        = "ec2-user"
+    bastion_host        = "${aws_instance.nat.public_ip}"
+    bastion_private_key = "${tls_private_key.key.private_key_pem}"
+  }
+
+  provisioner "file" {
+    content = "${tls_private_key.third_stop.private_key_pem}"
+    destination = "/tmp/id_rsa"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo mv /tmp/id_rsa /home/james/id_rsa",
+      "sudo chown james /home/james/id_rsa",
+      "sudo chmod 400 /home/james/id_rsa",
+      "cloud-init status --wait"
+    ]
+  }
+}
+
+data "template_file" "third_stop_user_data" {
+  template = "${file("${path.module}/third_stop/init.cfg.tpl")}"
+  vars = {
+    james_public_key = "${tls_private_key.third_stop.public_key_openssh}"
+  }
+}
+
+resource "aws_instance" "third_stop" {
+  ami           = "${data.aws_ami.ubuntu.id}"
+  instance_type = "t2.nano"
+  private_ip    = "10.0.0.13"
+  subnet_id     = "${aws_subnet.private.id}"
+  depends_on    = ["aws_instance.nat"]
+  key_name      = "${aws_key_pair.key.key_name}"
+  user_data     = "${data.template_file.third_stop_user_data.rendered}"
+  vpc_security_group_ids = ["${aws_security_group.private.id}"]
+  tags = {
+    Name = "ssh_inception/third_stop"
+  }
+  connection {
+    user         = "ubuntu"
+    private_key  = "${tls_private_key.key.private_key_pem}"
+
+    # connect to NAT first, then connect to host
+    bastion_user        = "ec2-user"
+    bastion_host        = "${aws_instance.nat.public_ip}"
+    bastion_private_key = "${tls_private_key.key.private_key_pem}"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "cloud-init status --wait"
+    ]
+  }
+}
+
+
+
 
 #resource "aws_instance" "ThirdStop" {
 #  ami           = "${data.aws_ami.ubuntu.id}"
