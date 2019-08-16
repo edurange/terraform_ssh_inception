@@ -46,8 +46,12 @@ resource "aws_key_pair" "key" {
 
 # save the private key locally
 resource "local_file" "key" {
-  content  = "${tls_private_key.key.private_key_pem}"
+  sensitive_content = "${tls_private_key.key.private_key_pem}"
   filename = "id_rsa"
+
+  provisioner "local-exec" {
+    command = "chmod 600 id_rsa"
+  }
 }
 
 resource "aws_vpc" "Cloud" {
@@ -77,7 +81,7 @@ resource "aws_subnet" "private" {
   }
 }
 
-resource "aws_security_group" "NATSG" {
+resource "aws_security_group" "public" {
   name = "NATSG"
   vpc_id = "${aws_vpc.Cloud.id}"
 
@@ -102,32 +106,28 @@ resource "aws_security_group" "NATSG" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  egress {
+    cidr_blocks = ["0.0.0.0/0"]
+    protocol = "-1"
+    from_port = 0
+    to_port = 0
+  }
+
+}
+
+resource "aws_security_group" "private" {
+  vpc_id = "${aws_vpc.Cloud.id}"
   ingress {
-    from_port = "-1"
-    to_port = "-1"
-    protocol = "icmp"
     cidr_blocks = ["0.0.0.0/0"]
+    protocol = "-1"
+    from_port = 0
+    to_port = 0
   }
-
   egress {
-    from_port = "80"
-    to_port = "80"
-    protocol = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port = "443"
-    to_port = "443"
-    protocol = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port = "22"
-    to_port = "22"
-    protocol = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    protocol = "-1"
+    from_port = 0
+    to_port = 0
   }
 }
 
@@ -151,7 +151,7 @@ resource "aws_route_table" "player_subnet_route_table" {
 
     route {
         cidr_block = "0.0.0.0/0"
-        instance_id = "${aws_instance.NAT.id}"
+        instance_id = "${aws_instance.nat.id}"
     }
 }
 
@@ -160,22 +160,19 @@ resource "aws_route_table_association" "player_subnet_route_table_association" {
   route_table_id = "${aws_route_table.player_subnet_route_table.id}"
 }
 
-resource "aws_instance" "NAT" {
+resource "aws_instance" "nat" {
   ami           = "${data.aws_ami.nat.id}"
   instance_type = "t2.micro"
   private_ip    = "10.0.129.5"
   subnet_id     = "${aws_subnet.SubnetNAT.id}"
-  vpc_security_group_ids = ["${aws_security_group.NATSG.id}"]
+  vpc_security_group_ids = ["${aws_security_group.public.id}"]
   associate_public_ip_address = true
+  source_dest_check = false
+  user_data = "${file("nat/init.cfg")}"
   key_name      = "${aws_key_pair.key.key_name}"
   tags = {
     Name = "SSH_Inception/Cloud/SubnetNAT/NAT"
   }
-  #provisioner "remote-exec" {
-  #  inline = [
-  #    ""
-  #  ]
-  #}
 }
 
 
@@ -193,14 +190,27 @@ resource "aws_instance" "NAT" {
 #  base64_encode = true
 #}
 
-resource "aws_instance" "StartingLine" {
+
+
+#data "aws_caller_identity" "current" {}
+
+#output "current_caller_arn" {
+#  value = "${data.aws_caller_identity.current.arn}"
+#}
+
+#output "current_caller_user_id" {
+#  value = "${data.aws_caller_identity.current.user_id}"
+#}
+
+resource "aws_instance" "starting_line" {
   ami           = "${data.aws_ami.ubuntu.id}"
   instance_type = "t2.micro"
   private_ip    = "10.0.0.5"
   subnet_id     = "${aws_subnet.private.id}"
-  depends_on    = ["aws_instance.NAT"]
+  depends_on    = ["aws_instance.nat"]
   key_name      = "${aws_key_pair.key.key_name}"
-  vpc_security_group_ids = ["${aws_security_group.NATSG.id}"]
+
+  vpc_security_group_ids = ["${aws_security_group.private.id}"]
   user_data = "${file("starting_line/init.cfg")}"
   tags = {
     Name = "SSH_Inception/Cloud/PlayerSubnet/StartingLine"
@@ -210,42 +220,64 @@ resource "aws_instance" "StartingLine" {
     user         = "ubuntu"
     private_key  = "${tls_private_key.key.private_key_pem}"
 
-    # connect to NAT first, then connect to host
     bastion_user        = "ec2-user"
-    bastion_host        = "${aws_instance.NAT.public_ip}"
+    bastion_host        = "${aws_instance.nat.public_ip}"
     bastion_private_key = "${tls_private_key.key.private_key_pem}"
-  }
-
-  provisioner "file" {
-    source = "starting_line/motd"
-    destination = "/tmp/motd"
   }
 
   provisioner "remote-exec" {
     inline = [
-      # requried because we enable ssh password authentication
-      "sudo service sshd reload",
+      "cloud-init status --wait"
+    ]
+  }
 
-      # so users don't see annoying stuff when they log in
-      "sudo chmod -x /etc/update-motd.d/*",
-      "sudo rm /etc/legal",
+#  provisioner "file" {
+#    source = "starting_line/motd"
+#    destination = "/tmp/motd"
+#  }
 
-      # instead, they see our beautiful motd
-      "sudo mv /tmp/motd /etc/motd"
+#  provisioner "remote-exec" {
+#    inline = [
+#      # requried because we enable ssh password authentication
+#      "sudo service sshd reload",
+#
+#      # so users don't see annoying stuff when they log in
+#      "sudo chmod -x /etc/update-motd.d/*",
+#      "sudo rm /etc/legal",
+
+#      # instead, they see our beautiful motd
+#      "sudo mv /tmp/motd /etc/motd"
+#    ]
+#  }
+}
+
+resource "aws_instance" "first_stop" {
+  ami           = "${data.aws_ami.ubuntu.id}"
+  instance_type = "t2.micro"
+  private_ip    = "10.0.0.7"
+  subnet_id     = "${aws_subnet.private.id}"
+  depends_on    = ["aws_instance.nat"]
+  key_name      = "${aws_key_pair.key.key_name}"
+  user_data     = "${file("first_stop/init.cfg")}"
+  vpc_security_group_ids = ["${aws_security_group.private.id}"]
+  tags = {
+    Name = "ssh_inception/first_stop"
+  }
+  connection {
+    user         = "ubuntu"
+    private_key  = "${tls_private_key.key.private_key_pem}"
+
+    # connect to NAT first, then connect to host
+    bastion_user        = "ec2-user"
+    bastion_host        = "${aws_instance.nat.public_ip}"
+    bastion_private_key = "${tls_private_key.key.private_key_pem}"
+  }
+  provisioner "remote-exec" {
+    inline = [
+      "cloud-init status --wait"
     ]
   }
 }
-
-#resource "aws_instance" "FirstStop" {
-#  ami           = "${data.aws_ami.ubuntu.id}"
-#  instance_type = "t2.micro"
-#  private_ip    = "10.0.0.7"
-#  subnet_id     = "${aws_subnet.private.id}"
-#  depends_on    = ["aws_instance.NAT"]
-#  tags = {
-#    Name = "SSH_Inception/Cloud/PlayerSubnet/FirstStop"
-#  }
-#}
 
 #resource "aws_instance" "SecondStop" {
 #  ami           = "${data.aws_ami.ubuntu.id}"
