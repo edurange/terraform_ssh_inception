@@ -9,6 +9,8 @@ packages:
 - net-tools
 - ftp
 - members
+groups:
+- student
 users:
 - default
 %{ for player in players ~}

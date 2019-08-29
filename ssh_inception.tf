@@ -177,7 +177,7 @@ resource "aws_instance" "nat" {
   })
   key_name                    = aws_key_pair.key.key_name
   tags = {
-    Name = "SSH_Inception/Cloud/SubnetNAT/NAT"
+    Name = "ssh_inception/nat"
   }
 }
 
@@ -194,7 +194,7 @@ resource "aws_instance" "starting_line" {
     players = var.players
   })
   tags = {
-    Name = "SSH_Inception/Cloud/PlayerSubnet/StartingLine"
+    Name = "ssh_inception/starting_line"
   }
 
   connection {
@@ -263,11 +263,11 @@ resource "aws_instance" "second_stop" {
     players          = var.players
     ssh_private_key  = tls_private_key.third_stop.private_key_pem
   })
-
   vpc_security_group_ids = [aws_security_group.private.id]
   tags = {
     Name = "ssh_inception/second_stop"
   }
+
   connection {
     host        = coalesce(self.public_ip, self.private_ip)
     type        = "ssh"
@@ -321,16 +321,6 @@ resource "aws_instance" "third_stop" {
   }
 }
 
-#resource "aws_instance" "ThirdStop" {
-#  ami           = "${data.aws_ami.ubuntu.id}"
-#  instance_type = "t2.micro"
-#  private_ip    = "10.0.0.13"
-#  subnet_id     = "${aws_subnet.private.id}"
-#  depends_on    = ["aws_instance.NAT"]
-#  tags = {
-#    Name = "SSH_Inception/Cloud/PlayerSubnet/ThirdStop"
-#  }
-#}
 #resource "aws_instance" "FourthStop" {
 #  ami           = "${data.aws_ami.ubuntu.id}"
 #  instance_type = "t2.micro"
