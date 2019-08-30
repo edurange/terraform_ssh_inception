@@ -1,5 +1,5 @@
 variable "players" {
-  type        = list(object({login=string, password=string}))
+  type        = list(object({login=string, password=string, fourth_stop_password=string}))
   description = "list of players"
 }
 
