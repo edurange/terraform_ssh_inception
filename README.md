@@ -14,3 +14,12 @@ You must install the `terraform` command line tool.
 * [`terraform apply`](https://www.terraform.io/docs/commands/apply.html)
 * [`terraform destroy`](https://www.terraform.io/docs/commands/destroy.html)
 
+## Variables
+
+The scenario can be parameterized with files in the `terraform.tfvars.json` file.
+
+How to make password hashes to put in variables file:
+```
+openssl passwd -6 PASSWORD
+```
+

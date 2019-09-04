@@ -15,8 +15,8 @@ users:
 - default
 %{ for player in players ~}
 - name: ${player.login}
-  lock_passwd: false
   groups: student
+  lock_passwd: true
   ssh_authorized_keys:
   - ${ssh_public_key}
   shell: /bin/bash
@@ -27,14 +27,13 @@ write_files:
   encoding: b64
 - path: /root/hide_credentials
   content: ${filebase64("third_stop/hide_credentials")}
-  permissions: '0550'
   encoding: b64
+  permissions: '0550'
 runcmd:
-- set -euxo pipefail
 - sudo rm /etc/update-motd.d/*
 - sudo rm /etc/legal
 - sudo hostname third-stop
 %{ for player in players ~}
-- /root/hide_credentials ${player.login} ${player.fourth_stop_password}
+- /root/hide_credentials ${player.login} ${player.fourth_stop_password_plaintext}
 %{ endfor ~}
 - service sshd reload

@@ -12,8 +12,8 @@ users:
 - default
 %{ for player in players ~}
 - name: ${player.login}
-  lock_passwd: false
   passwd: ${player.password}
+  lock_passwd: false
   shell: /bin/bash
 %{ endfor ~}
 write_files:

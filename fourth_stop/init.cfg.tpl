@@ -1,0 +1,43 @@
+#cloud-config
+repo_update: true
+repo_upgrade: all
+ssh_pwauth: yes
+hostname: fourth-stop
+packages:
+- nmap
+- iputils-ping
+- net-tools
+- ftp
+groups:
+- student
+users:
+- default
+%{ for player in players ~}
+- name: ${player.login}
+  groups: student
+  passwd: ${player.fourth_stop_password_hash}
+  lock_passwd: false
+  shell: /bin/bash
+%{ endfor ~}
+write_files:
+- path: /etc/motd
+  encoding: b64
+  content: ${filebase64("fourth_stop/motd")}
+- path: /root/setup_player_home
+  encoding: b64
+  permissions: '0550'
+  content: ${filebase64("fourth_stop/setup_player_home")}
+- path: /root/decrypt_password
+  encoding: b64
+  content: ${filebase64("fourth_stop/decrypt_password")}
+  permissions: '0555'
+runcmd:
+- rm /etc/update-motd.d/*
+- rm /etc/legal
+- hostname fourth-stop
+- service sshd reload
+%{ for player in players ~}
+- /root/setup_player_home ${player.login} ${player.fifth_stop_password_plaintext} ${fifth_stop_password_key}
+%{ endfor ~}
+# block traffic from ThirdStop. players must find a way around this
+- iptables -A INPUT -s 10.0.0.13 -j DROP
