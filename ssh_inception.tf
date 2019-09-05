@@ -1,5 +1,17 @@
 variable "players" {
-  type        = list(object({login=string, password=string, fourth_stop_password_plaintext=string, fourth_stop_password_hash=string, fifth_stop_password_plaintext=string, fifth_stop_password_hash=string, satans_palace_password_plaintext=string, satans_palace_password_hash=string}))
+  type        = list(object({
+    login=string,
+    password=object({plaintext=string,hash=string}),
+    fourth_stop_password=object({plaintext=string,hash=string}),
+    fifth_stop_password=object({plaintext=string,hash=string}),
+    satans_palace_password=object({plaintext=string,hash=string}),
+    secret_starting_line=string,
+    secret_first_stop=string,
+    secret_second_stop=string,
+    secret_third_stop=string,
+    secret_fourth_stop=string,
+    secret_fifth_stop=string,
+    master_string=string}))
   description = "list of players"
 }
 
@@ -186,6 +198,10 @@ resource "aws_instance" "nat" {
   }
 }
 
+output "nat_instance_ip_address" {
+  value = aws_instance.nat.public_ip
+}
+
 resource "aws_instance" "starting_line" {
   ami           = data.aws_ami.ubuntu.id
   instance_type = "t2.nano"
@@ -292,6 +308,21 @@ resource "aws_instance" "second_stop" {
   }
 }
 
+data "template_cloudinit_config" "third_stop" {
+  gzip           = true
+  base64_encode  = true
+
+  part {
+    filename     = "init.cfg"
+    content_type = "text/cloud-config"
+    content      = templatefile("third_stop/init.cfg.tpl", {
+      players        = var.players
+      ssh_public_key = tls_private_key.third_stop.public_key_openssh
+    })
+
+  }
+}
+
 resource "aws_instance" "third_stop" {
   ami                    = data.aws_ami.ubuntu.id
   instance_type          = "t2.nano"
@@ -299,10 +330,7 @@ resource "aws_instance" "third_stop" {
   subnet_id              = aws_subnet.private.id
   depends_on             = [aws_instance.nat]
   key_name               = aws_key_pair.key.key_name
-  user_data              = templatefile("third_stop/init.cfg.tpl", {
-    players        = var.players
-    ssh_public_key = tls_private_key.third_stop.public_key_openssh
-  })
+  user_data              = data.template_cloudinit_config.third_stop.rendered
   vpc_security_group_ids = [aws_security_group.private.id]
   tags = {
     Name = "ssh_inception/third_stop"

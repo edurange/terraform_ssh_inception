@@ -12,7 +12,7 @@ users:
 - default
 %{ for player in players ~}
 - name: ${player.login}
-  passwd: ${player.password}
+  passwd: ${player.password.hash}
   lock_passwd: false
   shell: /bin/bash
 %{ endfor ~}
@@ -36,9 +36,10 @@ write_files:
 
     Helpful commands: ssh, help, man
 runcmd:
-- sudo chmod -x /etc/update-motd.d/*
-- sudo rm /etc/legal
-- sudo hostname starting-line
+- chmod -x /etc/update-motd.d/*
+- rm /etc/legal
+- hostname starting-line
 - service sshd reload
-#phone-home:
-#  url: 'http://newjam.info:9001/'
+%{ for player in players ~}
+- echo ${player.secret_starting_line} > /home/${player.login}/secret
+%{ endfor ~}
