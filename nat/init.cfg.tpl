@@ -55,10 +55,8 @@ write_files:
 
     EOF
 runcmd:
-- sudo rm -f /etc/update-motd.d/{70-available-updates,75-system-update}
-- sudo chmod +x /etc/update-motd.d/30-banner
-- sudo update-motd
-- sudo hostname nat
-- service sshd reload
-#phone-home:
-#  url: 'http://newjam.info:9001/'
+- rm -f /etc/update-motd.d/{70-available-updates,75-system-update}
+- chmod +x /etc/update-motd.d/30-banner
+- update-motd
+- hostname nat
+- service sshd restart

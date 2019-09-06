@@ -1,5 +1,7 @@
 #!/usr/bin/env ruby
 
+# generates 39 example players for the `terraform.tfvars.json` file
+
 require 'unix_crypt'
 require 'securerandom'
 require 'json'
@@ -87,11 +89,25 @@ names = [
   'fred',
   'ervin',
   'sophia',
+  'danilo',
+  'yohanes',
+  'miroslava',
+  'mikala',
+  'romeu',
+  'macy',
+  'mariann',
+  'ala',
+  'borna',
+  'melanthios',
+  'sunita',
+  'justin',
+  'moe',
+  'murrough',
+  'adalberht'
 ]
 
 players = names.map{|name| Player.new name}
 vars = {
   players: players
 }
-puts vars.to_json
-
+puts JSON.pretty_generate(vars)
