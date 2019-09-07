@@ -10,16 +10,23 @@ You must install the `terraform` command line tool.
 ## Running
 
 * [`terraform init`](https://www.terraform.io/docs/commands/init.html)
-* [`terraform plan`](https://www.terraform.io/docs/commands/plan.html)
 * [`terraform apply`](https://www.terraform.io/docs/commands/apply.html)
 * [`terraform destroy`](https://www.terraform.io/docs/commands/destroy.html)
 
 ## Variables
 
-The scenario can be parameterized with files in the `terraform.tfvars.json` file.
+The scenario can be parameterized with files in the [`players.auto.tfvars.json`](players.auto.tfvars.json) file.
 
-How to make password hashes to put in variables file:
+Currently password hashes have to be provided as variables. We could hash the plaintext passwords using the [terraform `bcrypt` function](https://www.terraform.io/docs/configuration/functions/bcrypt.html). However, since a new random salt is generated each time it would incorrectly mark any resource that uses the password as tainted.
+
+You can generate a hash of `PASSWORD` in a linux shell with
 ```
-openssl passwd -6 PASSWORD
+$ openssl passwd -6 PASSWORD
+$6$4IqCqvR8tz2FaRFr$CTnNKB707D/otiy114t/VVXXIgXWqX.fLFB4IhF2dS2h/aU7bwpSZPOGQmplg/WQrK5/hc8zWBaEAsGWOkmLj0
+```
+
+The utility [`create_players`](create_players) will make a [`players.auto.tfvars.json`](players.auto.tfvars.json) file:
+```
+$ ./create_players > players.auto.tfvars.json
 ```
 
