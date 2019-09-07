@@ -15,7 +15,7 @@ You must install the `terraform` command line tool.
 
 ## Variables
 
-The scenario can be parameterized with files in the [`players.auto.tfvars.json`](players.auto.tfvars.json) file.
+The scenario can be parameterized with files in the [`players.auto.tfvars.json`](players.auto.tfvars.json) file. This contains a list of player logins, passwords, flags, etc.
 
 Currently password hashes have to be provided as variables. We could hash the plaintext passwords using the [terraform `bcrypt` function](https://www.terraform.io/docs/configuration/functions/bcrypt.html). However, since a new random salt is generated each time it would incorrectly mark any resource that uses the password as tainted.
 
