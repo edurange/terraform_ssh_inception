@@ -8,13 +8,10 @@ packages:
 - iputils-ping
 - net-tools
 - ftp
-groups:
-- student
 users:
 - default
 %{ for player in players ~}
 - name: ${player.login}
-  groups: student
   lock_passwd: false
   passwd: ${player.password.hash}
   shell: /bin/bash
@@ -22,7 +19,7 @@ users:
 write_files:
 - path: /etc/motd
   encoding: b64
-  content: ${filebase64("second_stop/motd")}
+  content: ${base64encode(motd)}
 - path: /root/id_rsa
   encoding: b64
   permissions: '0444'

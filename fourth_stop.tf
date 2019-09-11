@@ -5,9 +5,10 @@ data "template_cloudinit_config" "fourth_stop" {
   part {
     filename     = "init.cfg"
     content_type = "text/cloud-config"
-    content = templatefile("fourth_stop/init.cfg.tpl", {
+    content = templatefile("${path.module}/fourth_stop/init.cfg.tpl", {
       players                 = var.players
       fifth_stop_password_key = random_string.fifth_stop_password_key.result
+      module_path = path.module
     })
 
   }
@@ -22,9 +23,9 @@ resource "aws_instance" "fourth_stop" {
   key_name               = aws_key_pair.key.key_name
   user_data_base64       = data.template_cloudinit_config.fourth_stop.rendered
   vpc_security_group_ids = [aws_security_group.private.id]
-  tags = {
+  tags = merge(local.common_tags, {
     Name = "ssh_inception/fourth_stop"
-  }
+  })
   connection {
     host        = coalesce(self.public_ip, self.private_ip)
     type        = "ssh"

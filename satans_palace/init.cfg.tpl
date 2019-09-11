@@ -3,13 +3,10 @@ repo_update: true
 repo_upgrade: all
 ssh_pwauth: yes
 hostname: satans-palace
-groups:
-- student
 users:
 - default
 %{ for player in players ~}
 - name: ${player.login}
-  groups: student
   passwd: ${player.satans_palace_password.hash}
   lock_passwd: false
   shell: /bin/bash
@@ -17,10 +14,10 @@ users:
 write_files:
 - path: /etc/motd
   encoding: b64
-  content: ${filebase64("satans_palace/motd")}
+  content: ${base64encode(motd)}
 - path: /root/setup_player_home
   encoding: b64
-  content: ${filebase64("satans_palace/setup_player_home")}
+  content: ${base64encode(setup_player_home)}
   permissions: '0550'
 runcmd:
 - rm /etc/update-motd.d/*

@@ -5,8 +5,9 @@ data "template_cloudinit_config" "fifth_stop" {
   part {
     filename     = "init.cfg"
     content_type = "text/cloud-config"
-    content = templatefile("fifth_stop/init.cfg.tpl", {
+    content = templatefile("${path.module}/fifth_stop/init.cfg.tpl", {
       players = var.players
+      module_path = path.module
     })
   }
 }
@@ -20,9 +21,9 @@ resource "aws_instance" "fifth_stop" {
   key_name               = aws_key_pair.key.key_name
   user_data_base64       = data.template_cloudinit_config.fifth_stop.rendered
   vpc_security_group_ids = [aws_security_group.private.id]
-  tags = {
+  tags = merge(local.common_tags, {
     Name = "ssh_inception/fifth_stop"
-  }
+  })
   connection {
     host        = coalesce(self.public_ip, self.private_ip)
     type        = "ssh"

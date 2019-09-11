@@ -1,0 +1,99 @@
+---
+Name: SSH_Inception
+Description: SSH Inception teaches students the basics of ssh, a secure a program
+  for logging into a remote machine.
+Instructions: Instruct students to connect to the first machine, and further login
+  instructions will appear onscreen once connected. They can also be found in /etc/motd
+InstructionsStudent: Login to the NAT_Instance. Further instructions will be found
+  there.
+Groups:
+- Name: Instructor
+- Name: Students
+  Users:
+  - Login: student
+  Variables:
+  - Name: fourth_stop_password
+    Type: password
+  - Name: fifth_stop_password
+    Type: password
+  - Name: satans_palace_password
+    Type: password
+  - Name: secret_starting_line
+    Type: random
+  - Name: secret_first_stop
+    Type: random
+  - Name: secret_second_stop
+    Type: random
+  - Name: secret_third_stop
+    Type: random
+  - Name: secret_fourth_stop
+    Type: random
+  - Name: secret_fifth_stop
+    Type: random
+  - Name: master_string
+    Type: random
+Scoring:
+- Text: Contents of the file '~/flag' on Starting Line?
+  Type: String
+  Options:
+  - variable-group-player
+  Values:
+  - Value: Students:secret_starting_line
+    Points: '1'
+  Order: 1
+  Points: 1
+- Text: Contents of the file '~/flag' on First Stop?
+  Type: String
+  Options:
+  - variable-group-player
+  Values:
+  - Value: Students:secret_first_stop
+    Points: '1'
+  Order: 2
+  Points: 1
+- Text: Contents of the file '~/flag' on Second Stop?
+  Type: String
+  Options:
+  - variable-group-player
+  Values:
+  - Value: Students:secret_second_stop
+    Points: '1'
+  Order: 3
+  Points: 1
+- Text: Contents of the file '~/flag' on Third Stop?
+  Type: String
+  Options:
+  - variable-group-player
+  Values:
+  - Value: Students:secret_third_stop
+    Points: '1'
+  Order: 4
+  Points: 1
+- Text: Contents of the file '~/flag' on Fourth Stop?
+  Type: String
+  Options:
+  - variable-group-player
+  Values:
+  - Value: Students:secret_fourth_stop
+    Points: '1'
+  Order: 5
+  Points: 1
+- Text: Contents of the file '~/flag' on Fifth Stop?
+  Type: String
+  Options:
+  - variable-group-player
+  Values:
+  - Value: Students:secret_fifth_stop
+    Points: '1'
+  Order: 6
+  Points: 1
+- Text: Proof that your are a SSH Inception Master?
+  Type: String
+  Options:
+  - variable-group-player
+  Values:
+  - Value: Students:master_string
+    Points: '1'
+  Order: 7
+  Points: 1
+

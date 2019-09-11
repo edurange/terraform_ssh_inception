@@ -108,6 +108,7 @@ names = [
 
 players = names.map{|name| Player.new name}
 vars = {
-  players: players
+  players: players,
+  scenario_id: SecureRandom.uuid
 }
 puts JSON.pretty_generate(vars)

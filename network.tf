@@ -1,7 +1,8 @@
 resource "aws_vpc" "cloud" {
   cidr_block = "10.0.0.0/16"
   tags = {
-    Name = "ssh_inception/cloud"
+    Name        = "ssh_inception/cloud"
+    scenario_id = var.scenario_id
   }
 }
 
@@ -26,7 +27,7 @@ resource "aws_subnet" "private" {
 }
 
 resource "aws_security_group" "public" {
-  name   = "NATSG"
+  name   = "ssh_inception/public"
   vpc_id = aws_vpc.cloud.id
 
   ingress {
@@ -59,6 +60,7 @@ resource "aws_security_group" "public" {
 }
 
 resource "aws_security_group" "private" {
+  name   = "ssh_inception/private"
   vpc_id = aws_vpc.cloud.id
   ingress {
     cidr_blocks = ["0.0.0.0/0"]

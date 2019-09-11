@@ -5,7 +5,7 @@ data "template_cloudinit_config" "nat" {
   part {
     filename     = "init.cfg"
     content_type = "text/cloud-config"
-    content = templatefile("nat/init.cfg.tpl", {
+    content = templatefile("${path.module}/nat/init.cfg.tpl", {
       players = var.players
     })
   }
@@ -21,9 +21,9 @@ resource "aws_instance" "nat" {
   source_dest_check           = false
   user_data_base64            = data.template_cloudinit_config.nat.rendered
   key_name                    = aws_key_pair.key.key_name
-  tags = {
+  tags = merge(local.common_tags, {
     Name = "ssh_inception/nat"
-  }
+  })
 }
 
 output "nat_instance_ip_address" {

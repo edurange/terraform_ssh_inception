@@ -8,14 +8,10 @@ packages:
 - iputils-ping
 - net-tools
 - ftp
-- members
-groups:
-- student
 users:
 - default
 %{ for player in players ~}
 - name: ${player.login}
-  groups: student
   lock_passwd: true
   ssh_authorized_keys:
   - ${ssh_public_key}
@@ -23,10 +19,10 @@ users:
 %{ endfor ~}
 write_files:
 - path: /etc/motd
-  content: ${filebase64("third_stop/motd")}
+  content: ${base64encode(motd)}
   encoding: b64
 - path: /root/hide_credentials
-  content: ${filebase64("third_stop/hide_credentials")}
+  content: ${base64encode(hide_credentials)}
   encoding: b64
   permissions: '0550'
 runcmd:

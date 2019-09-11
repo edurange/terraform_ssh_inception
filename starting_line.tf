@@ -5,7 +5,7 @@ data "template_cloudinit_config" "starting_line" {
   part {
     filename     = "init.cfg"
     content_type = "text/cloud-config"
-    content = templatefile("starting_line/init.cfg.tpl", {
+    content = templatefile("${path.module}/starting_line/init.cfg.tpl", {
       players = var.players
     })
   }
@@ -21,9 +21,10 @@ resource "aws_instance" "starting_line" {
   vpc_security_group_ids = [aws_security_group.private.id]
   user_data_base64       = data.template_cloudinit_config.starting_line.rendered
 
-  tags = {
+
+  tags = merge(local.common_tags, {
     Name = "ssh_inception/starting_line"
-  }
+  })
 
   connection {
     host        = coalesce(self.public_ip, self.private_ip)

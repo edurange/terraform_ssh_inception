@@ -8,13 +8,10 @@ packages:
 - iputils-ping
 - net-tools
 - ftp
-groups:
-- student
 users:
 - default
 %{ for player in players ~}
 - name: ${player.login}
-  groups: student
   passwd: ${player.fourth_stop_password.hash}
   lock_passwd: false
   shell: /bin/bash
@@ -22,14 +19,14 @@ users:
 write_files:
 - path: /etc/motd
   encoding: b64
-  content: ${filebase64("fourth_stop/motd")}
+  content: ${filebase64("${module_path}/fourth_stop/motd")}
 - path: /root/setup_player_home
   encoding: b64
   permissions: '0550'
-  content: ${filebase64("fourth_stop/setup_player_home")}
+  content: ${filebase64("${module_path}/fourth_stop/setup_player_home")}
 - path: /root/decrypt_password
   encoding: b64
-  content: ${filebase64("fourth_stop/decrypt_password")}
+  content: ${filebase64("${module_path}/fourth_stop/decrypt_password")}
   permissions: '0555'
 runcmd:
 - rm /etc/update-motd.d/*

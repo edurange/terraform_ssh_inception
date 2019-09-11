@@ -15,6 +15,17 @@ variable "players" {
   description = "list of players"
 }
 
+variable "scenario_id" {
+  type        = string
+  description = "identifier for instance of this scenario"
+}
+
+locals {
+  common_tags = {
+    scenario_id = var.scenario_id
+  }
+}
+
 resource "random_string" "fifth_stop_password_key" {
   length  = 8
   special = false
@@ -62,7 +73,7 @@ resource "tls_private_key" "key" {
 
 # upload the public key to aws
 resource "aws_key_pair" "key" {
-  key_name   = "ssh_inception_key"
+  key_name   = "ssh_inception/key (${var.scenario_id})"
   public_key = tls_private_key.key.public_key_openssh
 }
 

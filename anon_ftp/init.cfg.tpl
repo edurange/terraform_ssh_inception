@@ -9,7 +9,7 @@ users:
 write_files:
 - path: /etc/vsftpd.conf
   encoding: b64
-  content: ${filebase64("anon_ftp/vsftpd.conf")}
+  content: ${base64encode(vsftpd_conf)}
 - path: /var/ftp/hint
   encoding: b64
   permissions: '0444'

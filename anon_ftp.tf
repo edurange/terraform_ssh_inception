@@ -5,15 +5,16 @@ resource "aws_instance" "anon_ftp" {
   subnet_id     = aws_subnet.private.id
   depends_on    = [aws_instance.nat]
   key_name      = aws_key_pair.key.key_name
-  user_data = templatefile("anon_ftp/init.cfg.tpl", {
-    hint = templatefile("anon_ftp/hint.tpl", {
+  user_data = templatefile("${path.module}/anon_ftp/init.cfg.tpl", {
+    hint = templatefile("${path.module}/anon_ftp/hint.tpl", {
       fifth_stop_password_key = random_string.fifth_stop_password_key.result
     })
+    vsftpd_conf = file("${path.module}/anon_ftp/vsftpd.conf")
   })
   vpc_security_group_ids = [aws_security_group.private.id]
-  tags = {
+  tags = merge(local.common_tags, {
     Name = "ssh_inception/anon_ftp"
-  }
+  })
   connection {
     host        = coalesce(self.public_ip, self.private_ip)
     type        = "ssh"
