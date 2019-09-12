@@ -6,7 +6,7 @@ data "template_cloudinit_config" "starting_line" {
     filename     = "init.cfg"
     content_type = "text/cloud-config"
     content = templatefile("${path.module}/starting_line/init.cfg.tpl", {
-      players = var.players
+      players = var.students
     })
   }
 }

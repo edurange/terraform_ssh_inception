@@ -6,7 +6,7 @@ data "template_cloudinit_config" "second_stop" {
     filename     = "init.cfg"
     content_type = "text/cloud-config"
     content = templatefile("${path.module}/second_stop/init.cfg.tpl", {
-      players         = var.players
+      players         = var.students
       ssh_private_key = tls_private_key.third_stop.private_key_pem
       motd            = file("${path.module}/second_stop/motd")
     })

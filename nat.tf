@@ -6,7 +6,7 @@ data "template_cloudinit_config" "nat" {
     filename     = "init.cfg"
     content_type = "text/cloud-config"
     content = templatefile("${path.module}/nat/init.cfg.tpl", {
-      players = var.players
+      players = var.students
     })
   }
 }

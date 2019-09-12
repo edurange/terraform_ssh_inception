@@ -1,4 +1,4 @@
-variable "players" {
+variable "students" {
   type = list(object({
     login                  = string,
     password               = object({ plaintext = string, hash = string }),
@@ -12,7 +12,7 @@ variable "players" {
     secret_fourth_stop     = string,
     secret_fifth_stop      = string,
   master_string = string }))
-  description = "list of players"
+  description = "list of players in the student group"
 }
 
 variable "scenario_id" {

@@ -6,7 +6,7 @@ data "template_cloudinit_config" "fourth_stop" {
     filename     = "init.cfg"
     content_type = "text/cloud-config"
     content = templatefile("${path.module}/fourth_stop/init.cfg.tpl", {
-      players                 = var.players
+      players                 = var.students
       fifth_stop_password_key = random_string.fifth_stop_password_key.result
       module_path = path.module
     })

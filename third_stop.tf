@@ -11,7 +11,7 @@ data "template_cloudinit_config" "third_stop" {
     filename     = "init.cfg"
     content_type = "text/cloud-config"
     content = templatefile("${path.module}/third_stop/init.cfg.tpl", {
-      players        = var.players
+      players        = var.students
       ssh_public_key = tls_private_key.third_stop.public_key_openssh
       motd           = file("${path.module}/third_stop/motd")
       hide_credentials = file("${path.module}/third_stop/hide_credentials")
