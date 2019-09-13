@@ -86,3 +86,10 @@ resource "local_file" "key" {
     command = "chmod 600 id_rsa"
   }
 }
+
+output "instances" {
+  value = [{
+    name = "NAT"
+    public_ip = aws_instance.nat.public_ip
+  }]
+}

@@ -6,8 +6,17 @@ Instructions: Instruct students to connect to the first machine, and further log
   instructions will appear onscreen once connected. They can also be found in /etc/motd
 InstructionsStudent: Login to the NAT_Instance. Further instructions will be found
   there.
+Instances:
+- Name: NAT
+- Name: StartingLine
+- Name: FirstStop
+- Name: SecondStop
+- Name: ThirdStop
+- Name: FourthStop
+- Name: FifthStop
+- Name: SatansPalace
+- Name: AnonFTP
 Groups:
-- Name: Instructor
 - Name: Students
   Users:
   - Login: student
@@ -32,6 +41,16 @@ Groups:
     Type: random
   - Name: master_string
     Type: random
+  Access:
+  - Instance: NAT
+    IP_Visible: true
+  - Instance: StartingLine
+  - Instance: FirstStop
+  - Instance: SecondStop
+  - Instance: ThirdStop
+  - Instance: FourthStop
+  - Instance: FifthStop
+  - Instance: SatansPalace
 Scoring:
 - Text: Contents of the file '~/flag' on Starting Line?
   Type: String
@@ -96,4 +115,3 @@ Scoring:
     Points: '1'
   Order: 7
   Points: 1
-
