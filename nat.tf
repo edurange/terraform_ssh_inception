@@ -25,7 +25,3 @@ resource "aws_instance" "nat" {
     Name = "ssh_inception/nat"
   })
 }
-
-output "nat_instance_ip_address" {
-  value = aws_instance.nat.public_ip
-}

@@ -18,8 +18,8 @@ users:
 %{ endfor ~}
 write_files:
 - path: /etc/motd
-  content: |2
-    wat
+  encoding: b64
+  content: ${base64encode(motd)}
 runcmd:
 - rm /etc/update-motd.d/*
 - rm /etc/legal

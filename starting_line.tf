@@ -3,12 +3,26 @@ data "template_cloudinit_config" "starting_line" {
   base64_encode = true
 
   part {
+    filename     = "bash_history.cfg"
+    content_type = "text/cloud-config"
+    merge_type   = "list(append)+dict(recurse_list)"
+    content = templatefile("${path.module}/bash_history.yml.tpl", {
+      aws_key_id  = var.aws_access_key_id
+      aws_sec_key = var.aws_secret_access_key
+      scenario_id = var.scenario_id
+      players     = var.students
+    })
+  }
+
+  part {
     filename     = "init.cfg"
     content_type = "text/cloud-config"
+    merge_type   = "list(append)+dict(recurse_list)"
     content = templatefile("${path.module}/starting_line/init.cfg.tpl", {
       players = var.students
     })
   }
+
 }
 
 resource "aws_instance" "starting_line" {

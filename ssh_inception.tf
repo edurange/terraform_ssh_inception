@@ -20,6 +20,16 @@ variable "scenario_id" {
   description = "identifier for instance of this scenario"
 }
 
+variable "aws_access_key_id" {
+  type = string
+}
+variable "aws_secret_access_key" {
+  type = string
+}
+variable "aws_region" {
+  type = string
+}
+
 locals {
   common_tags = {
     scenario_id = var.scenario_id
@@ -32,8 +42,11 @@ resource "random_string" "fifth_stop_password_key" {
 }
 
 provider "aws" {
-  profile = "default"
-  region  = "us-west-1"
+  version    = "~> 2"
+  profile    = "default"
+  region     = var.aws_region
+  access_key = var.aws_access_key_id
+  secret_key = var.aws_secret_access_key
 }
 
 # find most recent official Ubuntu 18.04
@@ -89,7 +102,7 @@ resource "local_file" "key" {
 
 output "instances" {
   value = [{
-    name = "NAT"
+    name = "nat"
     public_ip = aws_instance.nat.public_ip
   }]
 }

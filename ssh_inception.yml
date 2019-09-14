@@ -7,15 +7,15 @@ Instructions: Instruct students to connect to the first machine, and further log
 InstructionsStudent: Login to the NAT_Instance. Further instructions will be found
   there.
 Instances:
-- Name: NAT
-- Name: StartingLine
-- Name: FirstStop
-- Name: SecondStop
-- Name: ThirdStop
-- Name: FourthStop
-- Name: FifthStop
-- Name: SatansPalace
-- Name: AnonFTP
+- Name: nat
+- Name: starting_line
+- Name: first_stop
+- Name: second_stop
+- Name: third_stop
+- Name: fourth_stop
+- Name: fifth_stop
+- Name: satans_palace
+- Name: anon_ftp
 Groups:
 - Name: Students
   Users:
@@ -42,17 +42,17 @@ Groups:
   - Name: master_string
     Type: random
   Access:
-  - Instance: NAT
+  - Instance: nat
     IP_Visible: true
-  - Instance: StartingLine
-  - Instance: FirstStop
-  - Instance: SecondStop
-  - Instance: ThirdStop
-  - Instance: FourthStop
-  - Instance: FifthStop
-  - Instance: SatansPalace
+  - Instance: starting_line
+  - Instance: first_stop
+  - Instance: second_stop
+  - Instance: third_stop
+  - Instance: fourth_stop
+  - Instance: fifth_stop
+  - Instance: satans_palace
 Scoring:
-- Text: Contents of the file '~/flag' on Starting Line?
+- Text: Contents of the file '~/secret' on Starting Line?
   Type: String
   Options:
   - variable-group-player
@@ -61,7 +61,7 @@ Scoring:
     Points: '1'
   Order: 1
   Points: 1
-- Text: Contents of the file '~/flag' on First Stop?
+- Text: Contents of the file '~/secret' on First Stop?
   Type: String
   Options:
   - variable-group-player
@@ -70,7 +70,7 @@ Scoring:
     Points: '1'
   Order: 2
   Points: 1
-- Text: Contents of the file '~/flag' on Second Stop?
+- Text: Contents of the file '~/secret' on Second Stop?
   Type: String
   Options:
   - variable-group-player
@@ -79,7 +79,7 @@ Scoring:
     Points: '1'
   Order: 3
   Points: 1
-- Text: Contents of the file '~/flag' on Third Stop?
+- Text: Contents of the file '~/secret' on Third Stop?
   Type: String
   Options:
   - variable-group-player
@@ -88,7 +88,7 @@ Scoring:
     Points: '1'
   Order: 4
   Points: 1
-- Text: Contents of the file '~/flag' on Fourth Stop?
+- Text: Contents of the file '~/secret' on Fourth Stop?
   Type: String
   Options:
   - variable-group-player
@@ -97,7 +97,7 @@ Scoring:
     Points: '1'
   Order: 5
   Points: 1
-- Text: Contents of the file '~/flag' on Fifth Stop?
+- Text: Contents of the file '~/secret' on Fifth Stop?
   Type: String
   Options:
   - variable-group-player
