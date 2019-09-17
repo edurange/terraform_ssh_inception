@@ -90,7 +90,7 @@ resource "aws_key_pair" "key" {
   public_key = tls_private_key.key.public_key_openssh
 }
 
-# save the private key locally
+# save the private key locally (useful for debugging)
 resource "local_file" "key" {
   sensitive_content = tls_private_key.key.private_key_pem
   filename          = "id_rsa"
@@ -103,6 +103,7 @@ resource "local_file" "key" {
 output "instances" {
   value = [{
     name = "nat"
-    public_ip = aws_instance.nat.public_ip
+    ip_address_public = aws_instance.nat.public_ip
+    ip_address_private = aws_instance.nat.private_ip
   }]
 }
