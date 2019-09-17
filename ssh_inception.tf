@@ -2,16 +2,19 @@ variable "students" {
   type = list(object({
     login                  = string,
     password               = object({ plaintext = string, hash = string }),
-    fourth_stop_password   = object({ plaintext = string, hash = string }),
-    fifth_stop_password    = object({ plaintext = string, hash = string }),
-    satans_palace_password = object({ plaintext = string, hash = string }),
-    secret_starting_line   = string,
-    secret_first_stop      = string,
-    secret_second_stop     = string,
-    secret_third_stop      = string,
-    secret_fourth_stop     = string,
-    secret_fifth_stop      = string,
-  master_string = string }))
+    variables              = object({
+      fourth_stop_password   = object({ plaintext = string, hash = string }),
+      fifth_stop_password    = object({ plaintext = string, hash = string }),
+      satans_palace_password = object({ plaintext = string, hash = string }),
+      secret_starting_line   = string,
+      secret_first_stop      = string,
+      secret_second_stop     = string,
+      secret_third_stop      = string,
+      secret_fourth_stop     = string,
+      secret_fifth_stop      = string,
+      master_string          = string
+    })
+  }))
   description = "list of players in the student group"
 }
 

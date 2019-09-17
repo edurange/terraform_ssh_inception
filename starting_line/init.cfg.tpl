@@ -41,5 +41,5 @@ runcmd:
 - hostname starting-line
 - service sshd reload
 %{ for player in players ~}
-- echo ${player.secret_starting_line} > /home/${player.login}/secret
+- echo ${player.variables.secret_starting_line} > /home/${player.login}/secret
 %{ endfor ~}

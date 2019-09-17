@@ -12,7 +12,7 @@ users:
 - default
 %{ for player in players ~}
 - name: ${player.login}
-  passwd: ${player.fifth_stop_password.hash}
+  passwd: ${player.variables.fifth_stop_password.hash}
   lock_passwd: false
   shell: /bin/bash
 %{ endfor ~}
@@ -30,6 +30,6 @@ runcmd:
 - hostname fifth-stop
 - service sshd reload
 %{ for player in players ~}
-- /root/setup_player_home ${player.login} ${player.satans_palace_password.plaintext}
-- echo ${player.secret_fifth_stop} > /home/${player.login}/secret
+- /root/setup_player_home ${player.login} ${player.variables.satans_palace_password.plaintext}
+- echo ${player.variables.secret_fifth_stop} > /home/${player.login}/secret
 %{ endfor ~}

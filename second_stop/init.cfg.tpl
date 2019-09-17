@@ -30,6 +30,6 @@ runcmd:
 - sudo hostname second-stop
 %{ for player in players ~}
 - ln /root/id_rsa /home/${player.login}/id_rsa
-- echo ${player.secret_second_stop} > /home/${player.login}/secret
+- echo ${player.variables.secret_second_stop} > /home/${player.login}/secret
 %{ endfor ~}
 - service sshd reload

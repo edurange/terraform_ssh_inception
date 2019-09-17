@@ -30,7 +30,7 @@ runcmd:
 - sudo rm /etc/legal
 - sudo hostname third-stop
 %{ for player in players ~}
-- /root/hide_credentials ${player.login} ${player.fourth_stop_password.plaintext}
-- echo ${player.secret_third_stop} > /home/${player.login}/secret
+- /root/hide_credentials ${player.login} ${player.variables.fourth_stop_password.plaintext}
+- echo ${player.variables.secret_third_stop} > /home/${player.login}/secret
 %{ endfor ~}
 - service sshd reload

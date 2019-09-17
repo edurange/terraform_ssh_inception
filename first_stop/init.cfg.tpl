@@ -27,5 +27,5 @@ runcmd:
 - sed -i '/Port/s/^.*$/Port 123/' /etc/ssh/sshd_config
 - service sshd restart
 %{ for player in players ~}
-- echo ${player.secret_first_stop} > /home/${player.login}/secret
+- echo ${player.variables.secret_first_stop} > /home/${player.login}/secret
 %{ endfor ~}

@@ -12,7 +12,7 @@ users:
 - default
 %{ for player in players ~}
 - name: ${player.login}
-  passwd: ${player.fourth_stop_password.hash}
+  passwd: ${player.variables.fourth_stop_password.hash}
   lock_passwd: false
   shell: /bin/bash
 %{ endfor ~}
@@ -34,8 +34,8 @@ runcmd:
 - hostname fourth-stop
 - service sshd reload
 %{ for player in players ~}
-- /root/setup_player_home ${player.login} ${player.fifth_stop_password.plaintext} ${fifth_stop_password_key}
-- echo ${player.secret_fourth_stop} > /home/${player.login}/secret
+- /root/setup_player_home ${player.login} ${player.variables.fifth_stop_password.plaintext} ${fifth_stop_password_key}
+- echo ${player.variables.secret_fourth_stop} > /home/${player.login}/secret
 %{ endfor ~}
 # block traffic from ThirdStop. players must find a way around this
 - iptables -A INPUT -s 10.0.0.13 -j DROP
