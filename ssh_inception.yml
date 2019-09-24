@@ -54,64 +54,43 @@ Groups:
 Scoring:
 - Text: Contents of the file '~/secret' on Starting Line?
   Type: String
-  Options:
-  - variable-group-player
   Values:
-  - Value: Students:secret_starting_line
+  - Value: ${player.variables.secret_starting_line}
     Points: '1'
-  Order: 1
   Points: 1
 - Text: Contents of the file '~/secret' on First Stop?
   Type: String
-  Options:
-  - variable-group-player
   Values:
-  - Value: Students:secret_first_stop
+  - Value: ${player.variables.secret_first_stop}
     Points: '1'
-  Order: 2
   Points: 1
 - Text: Contents of the file '~/secret' on Second Stop?
   Type: String
-  Options:
-  - variable-group-player
   Values:
-  - Value: Students:secret_second_stop
+  - Value: ${player.variables.secret_second_stop}
     Points: '1'
-  Order: 3
   Points: 1
 - Text: Contents of the file '~/secret' on Third Stop?
   Type: String
-  Options:
-  - variable-group-player
   Values:
-  - Value: Students:secret_third_stop
+  - Value: ${player.variables.secret_third_stop}
     Points: '1'
-  Order: 4
   Points: 1
 - Text: Contents of the file '~/secret' on Fourth Stop?
   Type: String
-  Options:
-  - variable-group-player
   Values:
-  - Value: Students:secret_fourth_stop
+  - Value: ${player.variables.secret_fourth_stop}
     Points: '1'
-  Order: 5
   Points: 1
 - Text: Contents of the file '~/secret' on Fifth Stop?
   Type: String
-  Options:
-  - variable-group-player
   Values:
-  - Value: Students:secret_fifth_stop
+  - Value: ${player.variables.secret_fifth_stop}
     Points: '1'
-  Order: 6
   Points: 1
 - Text: Proof that your are a SSH Inception Master?
   Type: String
-  Options:
-  - variable-group-player
   Values:
-  - Value: Students:master_string
+  - Value: ${player.variables.master_string}
     Points: '1'
-  Order: 7
   Points: 1
