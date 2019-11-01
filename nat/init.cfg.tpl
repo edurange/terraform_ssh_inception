@@ -57,6 +57,6 @@ write_files:
 runcmd:
 - rm -f /etc/update-motd.d/{70-available-updates,75-system-update}
 - chmod +x /etc/update-motd.d/30-banner
-- update-motd
 - hostname nat
 - service sshd restart
+- update-motd
