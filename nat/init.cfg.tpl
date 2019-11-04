@@ -49,8 +49,8 @@ write_files:
     will give you a list of useful commands to solve each challenge. Use man
     pages to help find useful options for commands. For example if the instructions
     say to use the command 'ssh' entering 'man ssh' will print the man page.
-    This message is located in the file '/etc/motd'
-
+    To print this message again, type 'cat message'
+ 
     Helpful commands: ssh, help, man
 
     EOF
@@ -58,5 +58,7 @@ runcmd:
 - rm -f /etc/update-motd.d/{70-available-updates,75-system-update}
 - chmod +x /etc/update-motd.d/30-banner
 - hostname nat
-- service sshd restart
 - update-motd
+- service sshd restart
+- echo "$(/etc/update-motd.d/30-banner)" > /home/student/message
+- sudo echo "$(/etc/update-motd.d/30-banner)" > /etc/motd
