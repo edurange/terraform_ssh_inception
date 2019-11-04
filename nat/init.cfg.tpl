@@ -18,6 +18,10 @@ users:
   shell: /bin/bash
 %{ endfor ~}
 write_files:
+- path: /root/setup_player_home
+  encoding: b64
+  content: ${base64encode(setup_player_home)}
+  permissions: '0550'
 - path: /etc/update-motd.d/30-banner
   content: |2
     #!/bin/sh
@@ -60,5 +64,9 @@ runcmd:
 - hostname nat
 - update-motd
 - service sshd restart
-- echo "$(/etc/update-motd.d/30-banner)" > /home/student/message
-- sudo echo "$(/etc/update-motd.d/30-banner)" > /etc/motd
+- echo "$(/etc/update-motd.d/30-banner)" > /tmp/message
+- cp /tmp/message /home/*
+- cat /tmp/message > /etc/motd
+%{ for player in players ~}
+- ['/root/setup_player_home', '${player.login}']
+%{ endfor ~}
