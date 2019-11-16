@@ -7,7 +7,6 @@ data "template_cloudinit_config" "nat" {
     content_type = "text/cloud-config"
     content = templatefile("${path.module}/nat/init.cfg.tpl", {
       players = var.students
-      setup_player_home = file("${path.module}/nat/setup_player_home")
     })
   }
 }
@@ -25,4 +24,24 @@ resource "aws_instance" "nat" {
   tags = merge(local.common_tags, {
     Name = "ssh_inception/nat"
   })
+  connection {
+    host        = aws_instance.nat.public_ip
+    port        = 22
+    type        = "ssh"
+    user        = "ec2-user"
+    private_key = tls_private_key.key.private_key_pem
+  }
+
+  provisioner "file" {
+    source = "${path.module}/nat/motd"
+    destination = "/tmp/message"
+  }
+
+  provisioner "remote-exec" {
+    inline = [      
+      "for homedir in /home/*; do sudo cp /tmp/message $homedir; done",
+      "sudo chmod 666 /etc/motd",
+      "sudo cat /tmp/message > /etc/motd"
+    ]
+  }
 }

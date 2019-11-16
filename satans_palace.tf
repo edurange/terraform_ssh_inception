@@ -39,9 +39,22 @@ resource "aws_instance" "satans_palace" {
     bastion_private_key = tls_private_key.key.private_key_pem
   }
 
+  provisioner "file" {
+    source = "${path.module}/ttylog"
+    destination = "/home/ubuntu"
+  }
+
+  provisioner "file" {
+    source = "${path.module}/tty_setup"
+    destination = "/home/ubuntu/tty_setup"
+  }
+
   provisioner "remote-exec" {
     inline = [
+      "set -eux",
       "cloud-init status --wait --long",
+      "chmod +x /home/ubuntu/tty_setup",
+      "sudo /home/ubuntu/tty_setup"
     ]
   }
 }
