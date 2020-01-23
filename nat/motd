@@ -16,15 +16,16 @@
                                           \/_/
 
     Welcome to SSH Inception. The goal is to answer all questions by exploring
-    the local network at 10.0.0.0/27.  Your are currently at the NAT Instance.
+    the local network, the subnet 10.0.0.0/27.  Your are currently at the NAT Instance.
     Your journey will begin when you login into the next host:
 
       ssh 10.0.0.5
 
     For every host you login to you will be greeted with instructions. Each host
     will give you a list of useful commands to solve each challenge. Use man
-    pages to help find useful options for commands. For example if the instructions
-    say to use the command 'ssh' entering 'man ssh' will print the man page.
-    To print this message again, type 'cat message'
+    pages to help find useful options for commands. 
+
+    Every stop has a file named 'secret' with a code inside. Submit these codes on 
+    EDURange to verify your progress.
 
     Helpful commands: ssh, help, man

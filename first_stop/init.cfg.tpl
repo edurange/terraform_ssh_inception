@@ -8,6 +8,7 @@ packages:
 - iputils-ping
 - net-tools
 - ftp
+- ipcalc
 users:
 - default
 %{ for player in players ~}

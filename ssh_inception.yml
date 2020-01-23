@@ -6,6 +6,7 @@ Instructions: Instruct students to connect to the first machine, and further log
   instructions will appear onscreen once connected. They can also be found in /etc/motd
 InstructionsStudent: Login to the NAT_Instance. Further instructions will be found
   there.
+Codelab: https://edurange.github.io/ssh_inception_tutorial
 Instances:
 - Name: nat
 - Name: starting_line
