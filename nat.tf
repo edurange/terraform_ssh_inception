@@ -13,7 +13,7 @@ data "template_cloudinit_config" "nat" {
 
 resource "aws_instance" "nat" {
   ami                         = data.aws_ami.nat.id
-  instance_type               = "t2.nano"
+  instance_type               = "t2.small"
   private_ip                  = "10.0.129.5"
   subnet_id                   = aws_subnet.public.id
   vpc_security_group_ids      = [aws_security_group.public.id]

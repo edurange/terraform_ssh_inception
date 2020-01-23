@@ -27,7 +27,7 @@ data "template_cloudinit_config" "first_stop" {
 
 resource "aws_instance" "first_stop" {
   ami                    = data.aws_ami.ubuntu.id
-  instance_type          = "t2.nano"
+  instance_type          = "t2.small"
   private_ip             = "10.0.0.7"
   subnet_id              = aws_subnet.private.id
   depends_on             = [aws_instance.nat]
