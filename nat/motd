@@ -16,7 +16,7 @@
                                           \/_/
 
     Welcome to SSH Inception. The goal is to answer all questions by exploring
-    the local network, the subnet 10.0.0.0/27.  Your are currently at the NAT Instance.
+    the local network, the subnet 10.0.0.0/27. You are currently at the NAT Instance.
     Your journey will begin when you login into the next host:
 
       ssh 10.0.0.5
