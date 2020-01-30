@@ -61,10 +61,17 @@ resource "aws_instance" "first_stop" {
     destination = "/home/ubuntu/tty_setup"
   }
 
+  provisioner "file" {
+    source = "${path.module}/clear_logs"
+    destination = "/home/ubuntu/clear_logs"
+  }
+
   provisioner "remote-exec" {
     inline = [
       "cloud-init status --wait --long",
       "chmod +x /home/ubuntu/tty_setup",
+      "chmod +x /home/ubuntu/clear_logs",
+      "sudo mv /home/ubuntu/clear_logs /usr/bin/clear_logs",
       "sudo /home/ubuntu/tty_setup"
     ]
   }
